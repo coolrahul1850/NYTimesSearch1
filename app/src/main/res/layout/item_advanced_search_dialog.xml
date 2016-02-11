@@ -1,0 +1,99 @@
+<!-- fragment_edit_name.xml -->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/advanced_search_dialog"
+    android:layout_width="fill_parent" android:layout_height="fill_parent"
+    android:minHeight="450dp" android:minWidth="700dp">
+
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="date"
+        android:ems="10"
+        android:id="@+id/advBgnDate"
+        android:layout_above="@+id/adv_sort_order"
+        android:layout_alignLeft="@+id/adv_sort_order"
+        android:layout_alignStart="@+id/adv_sort_order"
+        android:layout_alignRight="@+id/ck_fashion"
+        android:layout_alignEnd="@+id/ck_fashion" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sort Order"
+        android:id="@+id/textView"
+        android:layout_above="@+id/cb_arts"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:paddingBottom="20dp" />
+
+    <Spinner
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:spinnerMode="dropdown"
+        android:id="@+id/adv_sort_order"
+        android:layout_alignBottom="@+id/textView"
+        android:layout_toRightOf="@+id/textView2"
+        android:layout_toEndOf="@+id/textView2"></Spinner>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="News Desk Values"
+        android:id="@+id/textView2"
+        android:layout_above="@+id/ck_sports"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Arts"
+        android:id="@+id/cb_arts"
+        android:checked="false"
+        android:layout_above="@+id/ck_fashion"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="0dp" />
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Fashion &amp; Style"
+        android:id="@+id/ck_fashion"
+        android:checked="false"
+        android:layout_above="@+id/ck_sports"
+        android:layout_alignLeft="@+id/cb_arts"
+        android:layout_alignStart="@+id/cb_arts" />
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sports"
+        android:id="@+id/ck_sports"
+        android:checked="false"
+        android:layout_centerVertical="true"
+        android:layout_alignLeft="@+id/ck_fashion"
+        android:layout_alignStart="@+id/ck_fashion" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Save"
+        android:id="@+id/advbtnSave"
+        android:layout_below="@+id/ck_sports"
+        android:layout_alignLeft="@+id/ck_sports"
+        android:layout_alignStart="@+id/ck_sports"
+        android:layout_marginTop="55dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Begin Date"
+        android:id="@+id/textView3"
+        android:layout_above="@+id/adv_sort_order"
+        android:layout_toLeftOf="@+id/advBgnDate"
+        android:layout_toStartOf="@+id/advBgnDate"
+        android:layout_alignParentLeft="true" />
+
+
+</RelativeLayout>
