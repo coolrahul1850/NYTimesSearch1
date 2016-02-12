@@ -11,6 +11,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Spinner;
 
@@ -23,6 +24,10 @@ public class AdvSearchDialog extends DialogFragment implements View.OnClickListe
 
     //To retain the value of the advanced search
     public static String preAdvBgnDate;
+    public static int preAdvSorter;
+    public static boolean flagArts = false;
+    public static boolean flagSports = false;
+    public static boolean flagFashion = false;
 
 
 
@@ -69,9 +74,54 @@ public class AdvSearchDialog extends DialogFragment implements View.OnClickListe
         advBgnDate = (EditText) view.findViewById(R.id.advBgnDate);
         advBgnDate.setText(preAdvBgnDate);
         arts = (CheckBox) view.findViewById(R.id.cb_arts);
+        arts.setChecked(flagArts);
         fashion = (CheckBox) view.findViewById(R.id.ck_fashion);
+        fashion.setChecked(flagFashion);
         sports = (CheckBox) view.findViewById(R.id.ck_sports);
+        sports.setChecked(flagSports);
 
+
+    //checkboxes on click listener
+        arts.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(arts.isChecked())
+                {
+                    flagArts = true;
+                }
+                else{
+                    flagArts = false;
+                }
+            }
+        });
+
+
+        sports.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(sports.isChecked())
+                {
+                    flagSports = true;
+                }
+                else{
+                    flagSports = false;
+                }
+            }
+        });
+
+        fashion.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(fashion.isChecked())
+                {
+                    flagFashion = true;
+
+                }
+                else{
+                    flagFashion = false;
+                }
+            }
+        });
 
         advBtnSave.setOnClickListener(this);
         String title = getArguments().getString("Advanced Search", "Advanced Search");
@@ -81,9 +131,10 @@ public class AdvSearchDialog extends DialogFragment implements View.OnClickListe
         //Filling the drop down for order
         advSortOrder = (Spinner) view.findViewById(R.id.adv_sort_order);
         String [] sortOrder = new String[] {"oldest","newest"};
+
         ArrayAdapter<String> sortAdapter = new ArrayAdapter<String>(getContext(),android.R.layout.simple_spinner_dropdown_item, sortOrder);
         advSortOrder.setAdapter(sortAdapter);
-
+        advSortOrder.setSelection(preAdvSorter);
         advSortOrder.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -108,15 +159,9 @@ public class AdvSearchDialog extends DialogFragment implements View.OnClickListe
     public void onClick(View v) {
 
         preAdvBgnDate = advBgnDate.getText().toString();
+        preAdvSorter = advSortOrder.getSelectedItemPosition();
         EditNameDialogListener advBgnDateListener = (EditNameDialogListener) getActivity();
-        if (preAdvBgnDate != "")
-        {
-            advBgnDateListener.onFinishEditDialog(advBgnDate.getText().toString()+"this"+advsortorder);
-        }
-        if (preAdvBgnDate == "")
-        {
-            advBgnDateListener.onFinishEditDialog(advsortorder);
-        }
+        advBgnDateListener.onFinishEditDialog(""+advBgnDate.getText().toString()+","+advsortorder+","+flagArts+","+flagSports+","+flagFashion);
         dismiss();
     }
 }

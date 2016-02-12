@@ -30,6 +30,8 @@ import org.snake.android.nytimessearch.model.Article;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -40,8 +42,9 @@ public class SearchActivity extends AppCompatActivity implements AdvSearchDialog
     //Bind variables
     @Bind (R.id.toolbar) Toolbar toolbar;
 
-
-    public static String beginDate;
+    public static String staticbeginDate;
+    public static String staticQuery;
+    public static String staticSortOrder;
 
     ArrayList<Article> articles;
     RecycleArticleAdapter rvAdapter;
@@ -120,13 +123,14 @@ public class SearchActivity extends AppCompatActivity implements AdvSearchDialog
     public boolean onCreateOptionsMenu (Menu menu){
 
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_search,menu);
+        inflater.inflate(R.menu.menu_search, menu);
         MenuItem searchItem = menu.findItem(R.id.action_search);
         final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                onArtcileSearched(query, null);
+                staticQuery = query;
+                onArtcileSearched(staticQuery, null, null, null, null, null);
                 return true;
             }
 
@@ -165,6 +169,7 @@ public class SearchActivity extends AppCompatActivity implements AdvSearchDialog
         rvArticles.setAdapter(rvAdapter);
 
         StaggeredGridLayoutManager gridLayoutManager = new StaggeredGridLayoutManager(3,StaggeredGridLayoutManager.VERTICAL);
+       // LinearLayoutManager gridLayoutManager = new LinearLayoutManager(this);
 //        rvArticles.setLayoutManager(new LinearLayoutManager(this));
         rvArticles.setLayoutManager(gridLayoutManager);
 
@@ -195,24 +200,36 @@ public class SearchActivity extends AppCompatActivity implements AdvSearchDialog
 
     @Override
     public void onFinishEditDialog(String inputText) {
-       // beginDate = "20160101";
-        String advBgnDate = "";
-        String advSortOrder = "";
+
+        articles.clear();
+        String advBgnDate;
+        String advSortOrder;
+        String advSports;
+        String advFashion;
+        String advArts;
+        List<String> filter = Arrays.asList(inputText.split(","));
+        advBgnDate = filter.get(0).toString().trim();
+        staticbeginDate = advBgnDate;
 
 
-        if (inputText.contains("newest"))
-        {
-            advSortOrder = "newest";
-        }
-        if (inputText.contains("oldest"))
-        {
-            advSortOrder = "oldest";
-        }
-        Log.d("inputtext",inputText);
+        advSortOrder = filter.get(1).toString().trim();
+        staticSortOrder = advSortOrder;
+
+        advArts = filter.get(2).toString().trim();
+        advSports = filter.get(3).toString().trim();
+        advFashion= filter.get(4).toString().trim();
+
+        Log.d("advBgnDate",advBgnDate);
+        Log.d("Sortorder",advSortOrder);
+        Log.d("Arts",advArts);
+        Log.d("Sports",advSports);
+        Log.d("Fashion",advFashion);
+        onArtcileSearched(staticQuery, staticbeginDate, staticSortOrder,null,null,null);
+
 
     }
 
-    public void onArtcileSearched (String query, String beginDate)
+    public void onArtcileSearched (String query, String beginDate, String sortOrder, String arts, String sports, String fashion)
     {
         articles.clear();
         AsyncHttpClient client = new AsyncHttpClient();
@@ -223,6 +240,8 @@ public class SearchActivity extends AppCompatActivity implements AdvSearchDialog
         params.put("page",0);
         params.put("q", query);
         params.put("begin_date",beginDate);
+        params.put("sort-order",sortOrder);
+        Log.d("Params",params.toString());
 
         client.get(url,params,new JsonHttpResponseHandler(){
             @Override
