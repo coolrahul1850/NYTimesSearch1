@@ -1,9 +1,8 @@
 package org.snake.android.nytimessearch.activities;
 
-import android.content.Context;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.MenuItemCompat;
@@ -29,6 +28,7 @@ import org.snake.android.nytimessearch.R;
 import org.snake.android.nytimessearch.adapters.RecycleArticleAdapter;
 import org.snake.android.nytimessearch.model.Article;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import butterknife.Bind;
@@ -52,11 +52,35 @@ public class SearchActivity extends AppCompatActivity implements AdvSearchDialog
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
-      //  isNetworkAvailable();
-        setupViews();
 
+        if(!isNetworkAvailable())
+        {
+            alertNetworkDialog();
+        }
+        setupViews();
     }
 
+    public void alertNetworkDialog()
+    {
+
+            AlertDialog.Builder alertDiaglogBuilder = new AlertDialog.Builder(SearchActivity.this);
+            alertDiaglogBuilder.setTitle("Internet Needed");
+            alertDiaglogBuilder.setMessage("Please connect to the internet to continue");
+            alertDiaglogBuilder.setPositiveButton("Retry", new DialogInterface.OnClickListener(){
+
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if(!isNetworkAvailable())
+                    {
+                        alertNetworkDialog();
+                    }
+                }
+            });
+            alertDiaglogBuilder.show();
+
+
+
+    }
     //Dialog Menu options selected
     public boolean onOptionsItemSelected(MenuItem item)
     {
@@ -82,12 +106,14 @@ public class SearchActivity extends AppCompatActivity implements AdvSearchDialog
 //checks whether device is connected to internet or not
     private Boolean isNetworkAvailable()
     {
-        Boolean isConnected = true;
-        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        isConnected = activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
-        Log.d("Network", isConnected.toString());
-        return isConnected;
+        Runtime runtime = Runtime.getRuntime();
+        try {
+            Process ipProcess = runtime.exec("/system/bin/ping -c 1 8.8.8.8");
+            int     exitValue = ipProcess.waitFor();
+            return (exitValue == 0);
+        } catch (IOException e)          { e.printStackTrace(); }
+        catch (InterruptedException e) { e.printStackTrace(); }
+        return false;
     }
 
     @Override
