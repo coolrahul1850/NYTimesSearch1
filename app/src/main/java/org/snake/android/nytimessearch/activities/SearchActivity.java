@@ -8,19 +8,15 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.GridView;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -30,7 +26,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.snake.android.nytimessearch.R;
-import org.snake.android.nytimessearch.adapters.ArticleArrayAdapter;
 import org.snake.android.nytimessearch.adapters.RecycleArticleAdapter;
 import org.snake.android.nytimessearch.model.Article;
 
@@ -42,15 +37,16 @@ import cz.msebera.android.httpclient.Header;
 
 public class SearchActivity extends AppCompatActivity implements AdvSearchDialog.EditNameDialogListener{
 
-    @Bind (R.id.etQuery) EditText etQuery;
-    @Bind (R.id.gvResults) GridView gvResults;
-    @Bind (R.id.btnSearch) Button btnSearch;
+    //Bind variables
     @Bind (R.id.toolbar) Toolbar toolbar;
+
 
     public static String beginDate;
 
     ArrayList<Article> articles;
-    ArticleArrayAdapter adapter;
+    RecycleArticleAdapter rvAdapter;
+    RecyclerView rvArticles;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,17 +57,14 @@ public class SearchActivity extends AppCompatActivity implements AdvSearchDialog
 
     }
 
-
-
+    //Dialog Menu options selected
     public boolean onOptionsItemSelected(MenuItem item)
     {
         switch(item.getItemId()){
             case R.id.action_search:
-             //   Toast.makeText(SearchActivity.this, "Action search", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.advanced_search:
                 showAdvancedSearchDialog();
-               // Toast.makeText(SearchActivity.this, "Advanced search", Toast.LENGTH_SHORT).show();
                 break;
             default:
 
@@ -83,12 +76,10 @@ public class SearchActivity extends AppCompatActivity implements AdvSearchDialog
     {
         FragmentManager fm = getSupportFragmentManager();
         AdvSearchDialog editNameDialog = AdvSearchDialog.newInstance("Title");
-
         editNameDialog.show(fm, "item_advanced_search_dialog");
-
     }
 
-
+//checks whether device is connected to internet or not
     private Boolean isNetworkAvailable()
     {
         Boolean isConnected = true;
@@ -102,7 +93,6 @@ public class SearchActivity extends AppCompatActivity implements AdvSearchDialog
     @Override
     public boolean onCreateOptionsMenu (Menu menu){
 
-
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_search,menu);
         MenuItem searchItem = menu.findItem(R.id.action_search);
@@ -110,7 +100,7 @@ public class SearchActivity extends AppCompatActivity implements AdvSearchDialog
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                onArtcileSearched(query,null);
+                onArtcileSearched(query, null);
                 return true;
             }
 
@@ -123,6 +113,19 @@ public class SearchActivity extends AppCompatActivity implements AdvSearchDialog
     }
 
 
+    // Append more data into the adapter
+    // This method probably sends out a network request and appends new data items to your adapter.
+    public void customLoadMoreDataFromApi(int offset) {
+        // Send an API request to retrieve appropriate data using the offset value as a parameter.
+        // Deserialize API response and then construct new objects to append to the adapter
+        // Add the new objects to the data source for the adapter
+        ArrayList<Article> moreArtciles = new ArrayList<Article>();
+        articles.addAll(moreArtciles);
+        // For efficiency purposes, notify the adapter of only the elements that got changed
+        // curSize will equal to the index of the first element inserted because the list is 0-indexed
+        int curSize = rvAdapter.getItemCount();
+        rvAdapter.notifyItemRangeInserted(curSize, articles.size() - 1);
+    }
 
 
     public void setupViews()
@@ -130,16 +133,25 @@ public class SearchActivity extends AppCompatActivity implements AdvSearchDialog
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
         articles = new ArrayList<>();
-        adapter = new ArticleArrayAdapter(this, articles);
-        gvResults.setAdapter(adapter);
 
-
-        RecyclerView rvArticles = (RecyclerView) findViewById(R.id.recycleGvResults);
-        RecycleArticleAdapter rvAdapter = new RecycleArticleAdapter(articles);
+        rvArticles = (RecyclerView) findViewById(R.id.recycleGvResults);
+        rvAdapter = new RecycleArticleAdapter(articles);
         rvArticles.setAdapter(rvAdapter);
-        rvArticles.setLayoutManager(new LinearLayoutManager(this));
 
-        rvAdapter.setOnItemClickListener(new RecycleArticleAdapter.OnItemClickListener(){
+        StaggeredGridLayoutManager gridLayoutManager = new StaggeredGridLayoutManager(3,StaggeredGridLayoutManager.VERTICAL);
+//        rvArticles.setLayoutManager(new LinearLayoutManager(this));
+        rvArticles.setLayoutManager(gridLayoutManager);
+
+       //utlimited scrolling
+        rvArticles.addOnScrollListener(new EndlessRecyclerViewScrollListener(gridLayoutManager) {
+
+            public void onLoadMore(int page, int totalItemsCount) {
+
+                customLoadMoreDataFromApi(page);
+
+            }
+        });
+        rvAdapter.setOnItemClickListener(new RecycleArticleAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View itemView, int position) {
                 // create an intent to display the arcticle
@@ -153,39 +165,30 @@ public class SearchActivity extends AppCompatActivity implements AdvSearchDialog
             }
         });
 
-        //on item click listener
-        gvResults.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // create an intent to display the arcticle
-                Intent i = new Intent(getApplicationContext(), ArticleActivity.class);
-                // get the article to display
-                Article article = articles.get(position);
-                //lauch the activity
-                i.putExtra("article", article);
-                //start activity
-                startActivity(i);
-            }
-        });
-
     }
-
-    public void onArticleSearch(View view) {
-        String query = etQuery.getText().toString();
-        onArtcileSearched (query,null);
-    }
-
 
     @Override
     public void onFinishEditDialog(String inputText) {
-        beginDate = inputText;
-        //Toast.makeText(this, "Hi, " + beginDate, Toast.LENGTH_SHORT).show();
-        onArtcileSearched("india",beginDate);
+       // beginDate = "20160101";
+        String advBgnDate = "";
+        String advSortOrder = "";
+
+
+        if (inputText.contains("newest"))
+        {
+            advSortOrder = "newest";
+        }
+        if (inputText.contains("oldest"))
+        {
+            advSortOrder = "oldest";
+        }
+        Log.d("inputtext",inputText);
+
     }
 
     public void onArtcileSearched (String query, String beginDate)
     {
-
+        articles.clear();
         AsyncHttpClient client = new AsyncHttpClient();
         String url = "http://api.nytimes.com/svc/search/v2/articlesearch.json";
 
@@ -203,7 +206,14 @@ public class SearchActivity extends AppCompatActivity implements AdvSearchDialog
 
                 try{
                     articleJsonResults = response.getJSONObject("response").getJSONArray("docs");
-                    adapter.addAll(Article.fromJSONArray(articleJsonResults));
+                    for (int i=0; i<articleJsonResults.length();i++)
+                    {
+                        JSONObject a = articleJsonResults.optJSONObject(i);
+                        Article article = new Article(a);
+                        articles.add(article);
+                        rvAdapter.notifyDataSetChanged();
+                    }
+
                     Log.d("DEBUG", articles.toString());
                 }catch (JSONException e)
                 {

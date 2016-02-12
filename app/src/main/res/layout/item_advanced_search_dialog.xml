@@ -25,7 +25,8 @@
         android:layout_above="@+id/cb_arts"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:paddingBottom="20dp" />
+        android:paddingBottom="20dp"
+        android:textColor="#000000" />
 
     <Spinner
         android:layout_width="wrap_content"
@@ -43,7 +44,8 @@
         android:id="@+id/textView2"
         android:layout_above="@+id/ck_sports"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:textColor="#000000" />
 
     <CheckBox
         android:layout_width="wrap_content"
@@ -93,7 +95,8 @@
         android:layout_above="@+id/adv_sort_order"
         android:layout_toLeftOf="@+id/advBgnDate"
         android:layout_toStartOf="@+id/advBgnDate"
-        android:layout_alignParentLeft="true" />
+        android:layout_alignParentLeft="true"
+        android:textColor="#000000" />
 
 
 </RelativeLayout>

@@ -63,22 +63,13 @@ public class RecycleArticleAdapter extends RecyclerView.Adapter<RecycleArticleAd
                     Log.d("RecycleViewClicked", "Clicked");
                     if (listener != null)
                         listener.onItemClick(itemView, getLayoutPosition());
-//                    Intent intent = new Intent (itemView.getContext(), ArticleActivity.class);
-//                    intent.putExtra("hey","hey");
-//                    startActivity(intent);
+
 
                 }
             });
         }
 
 
-//        @Override
-//        public void onClick(View v) {
-//
-//            int position = getLayoutPosition();
-//            Log.d("Clicked",position+"");
-//
-//        }
     }
 
     @Override
