@@ -22,7 +22,7 @@ import org.snake.android.nytimessearch.R;
  */
 public class AdvSearchDialog extends DialogFragment implements View.OnClickListener{
 
-    //To retain the value of the advanced search
+    //To retain the value of the advanced search and other searches
     public static String preAdvBgnDate;
     public static int preAdvSorter;
     public static boolean flagArts = false;

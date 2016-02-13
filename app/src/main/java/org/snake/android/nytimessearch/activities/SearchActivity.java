@@ -42,11 +42,13 @@ public class SearchActivity extends AppCompatActivity implements AdvSearchDialog
     //Bind variables
     @Bind (R.id.toolbar) Toolbar toolbar;
 
+    //static varibales to retain filters
     public static String staticbeginDate;
     public static String staticQuery;
     public static String staticSortOrder;
     public static int staticPageId;
 
+    //array list and adapters
     ArrayList<Article> articles;
     RecycleArticleAdapter rvAdapter;
     RecyclerView rvArticles;
@@ -64,6 +66,8 @@ public class SearchActivity extends AppCompatActivity implements AdvSearchDialog
         setupViews();
     }
 
+
+    //alert box to check at the start of the app where internet is avaliable or not
     public void alertNetworkDialog()
     {
 
@@ -100,6 +104,7 @@ public class SearchActivity extends AppCompatActivity implements AdvSearchDialog
         return true;
     }
 
+    //Advanced search window
     private void showAdvancedSearchDialog()
     {
         FragmentManager fm = getSupportFragmentManager();
@@ -146,22 +151,18 @@ public class SearchActivity extends AppCompatActivity implements AdvSearchDialog
     }
 
 
-    // Append more data into the adapter
-    // This method probably sends out a network request and appends new data items to your adapter.
+    //endless scrolling
     public void customLoadMoreDataFromApi(int offset) {
-        // Send an API request to retrieve appropriate data using the offset value as a parameter.
-        // Deserialize API response and then construct new objects to append to the adapter
-        // Add the new objects to the data source for the adapter
+
        staticPageId++;
         onArtcileSearched (staticQuery, staticbeginDate, null, null, null, null);
 
-        // For efficiency purposes, notify the adapter of only the elements that got changed
-        // curSize will equal to the index of the first element inserted because the list is 0-indexed
         int curSize = rvAdapter.getItemCount();
         rvAdapter.notifyItemRangeInserted(curSize, articles.size() - 1);
     }
 
 
+// this is called oncreate when app loads
     public void setupViews()
     {
         ButterKnife.bind(this);
@@ -173,8 +174,7 @@ public class SearchActivity extends AppCompatActivity implements AdvSearchDialog
         rvArticles.setAdapter(rvAdapter);
 
         StaggeredGridLayoutManager gridLayoutManager = new StaggeredGridLayoutManager(3,StaggeredGridLayoutManager.VERTICAL);
-       // LinearLayoutManager gridLayoutManager = new LinearLayoutManager(this);
-//        rvArticles.setLayoutManager(new LinearLayoutManager(this));
+
         rvArticles.setLayoutManager(gridLayoutManager);
 
        //utlimited scrolling
