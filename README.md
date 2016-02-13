@@ -16,7 +16,7 @@ The following **required** functionality is completed:
   * [done] Sort order (oldest or newest)
 * [done] Subsequent searches have any filters applied to the search results
 * [done] User can tap on any image in results to see the full text of article **full-screen**
-* [partially done] User can **scroll down to see more articles**. The maximum number of articles is limited by the API search.
+* [done] User can **scroll down to see more articles**. The maximum number of articles is limited by the API search.
 
 The following **optional** features are implemented:
 

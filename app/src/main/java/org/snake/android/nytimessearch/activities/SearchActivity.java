@@ -45,6 +45,7 @@ public class SearchActivity extends AppCompatActivity implements AdvSearchDialog
     public static String staticbeginDate;
     public static String staticQuery;
     public static String staticSortOrder;
+    public static int staticPageId;
 
     ArrayList<Article> articles;
     RecycleArticleAdapter rvAdapter;
@@ -130,6 +131,8 @@ public class SearchActivity extends AppCompatActivity implements AdvSearchDialog
             @Override
             public boolean onQueryTextSubmit(String query) {
                 staticQuery = query;
+                articles.clear();
+                staticPageId =0;
                 onArtcileSearched(staticQuery, null, null, null, null, null);
                 return true;
             }
@@ -149,8 +152,9 @@ public class SearchActivity extends AppCompatActivity implements AdvSearchDialog
         // Send an API request to retrieve appropriate data using the offset value as a parameter.
         // Deserialize API response and then construct new objects to append to the adapter
         // Add the new objects to the data source for the adapter
-        ArrayList<Article> moreArtciles = new ArrayList<Article>();
-        articles.addAll(moreArtciles);
+       staticPageId++;
+        onArtcileSearched (staticQuery, staticbeginDate, null, null, null, null);
+
         // For efficiency purposes, notify the adapter of only the elements that got changed
         // curSize will equal to the index of the first element inserted because the list is 0-indexed
         int curSize = rvAdapter.getItemCount();
@@ -224,20 +228,21 @@ public class SearchActivity extends AppCompatActivity implements AdvSearchDialog
         Log.d("Arts",advArts);
         Log.d("Sports",advSports);
         Log.d("Fashion",advFashion);
-        onArtcileSearched(staticQuery, staticbeginDate, staticSortOrder,null,null,null);
+        articles.clear();
+        onArtcileSearched(staticQuery, staticbeginDate, staticSortOrder, null, null, null);
 
 
     }
 
     public void onArtcileSearched (String query, String beginDate, String sortOrder, String arts, String sports, String fashion)
     {
-        articles.clear();
+      //  articles.clear();
         AsyncHttpClient client = new AsyncHttpClient();
         String url = "http://api.nytimes.com/svc/search/v2/articlesearch.json";
 
         RequestParams params = new RequestParams();
         params.put("api-key","243e55e75f668c889ac0b0ea783d9169:12:74340175");
-        params.put("page",0);
+        params.put("page",staticPageId);
         params.put("q", query);
         params.put("begin_date",beginDate);
         params.put("sort-order",sortOrder);
