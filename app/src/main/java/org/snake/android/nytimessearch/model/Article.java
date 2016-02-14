@@ -7,9 +7,7 @@ import org.json.JSONObject;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-/**
- * Created by rmukhedkar on 2/8/16.
- */
+
 public class Article implements Serializable{
 
     String webUrl;

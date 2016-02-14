@@ -55,8 +55,6 @@ public class RecycleArticleAdapter extends RecyclerView.Adapter<RecycleArticleAd
             recycleImageView = (ImageView) itemView.findViewById(R.id.ivImage);
             recycleTvTitle = (TextView)itemView.findViewById(R.id.tvTitle);
             this.context = context;
-         //   itemView.setOnClickListener(this);
-
             itemView.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View v) {
@@ -68,8 +66,6 @@ public class RecycleArticleAdapter extends RecyclerView.Adapter<RecycleArticleAd
                 }
             });
         }
-
-
     }
 
     @Override

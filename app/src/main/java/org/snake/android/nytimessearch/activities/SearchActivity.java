@@ -47,6 +47,7 @@ public class SearchActivity extends AppCompatActivity implements AdvSearchDialog
     public static String staticQuery;
     public static String staticSortOrder;
     public static int staticPageId;
+    public static String staticAdvFashion;
 
     //array list and adapters
     ArrayList<Article> articles;
@@ -63,7 +64,8 @@ public class SearchActivity extends AppCompatActivity implements AdvSearchDialog
         {
             alertNetworkDialog();
         }
-        setupViews();
+
+      setupViews();
     }
 
 
@@ -137,7 +139,7 @@ public class SearchActivity extends AppCompatActivity implements AdvSearchDialog
             public boolean onQueryTextSubmit(String query) {
                 staticQuery = query;
                 articles.clear();
-                staticPageId =0;
+                staticPageId = 0;
                 onArtcileSearched(staticQuery, null, null, null, null, null);
                 return true;
             }
@@ -154,8 +156,8 @@ public class SearchActivity extends AppCompatActivity implements AdvSearchDialog
     //endless scrolling
     public void customLoadMoreDataFromApi(int offset) {
 
-       staticPageId++;
-        onArtcileSearched (staticQuery, staticbeginDate, null, null, null, null);
+      //  staticPageId++;
+        onArtcileSearched(staticQuery, staticbeginDate, null, null, null, null);
 
         int curSize = rvAdapter.getItemCount();
         rvAdapter.notifyItemRangeInserted(curSize, articles.size() - 1);
@@ -178,11 +180,13 @@ public class SearchActivity extends AppCompatActivity implements AdvSearchDialog
         rvArticles.setLayoutManager(gridLayoutManager);
 
        //utlimited scrolling
+
         rvArticles.addOnScrollListener(new EndlessRecyclerViewScrollListener(gridLayoutManager) {
 
             public void onLoadMore(int page, int totalItemsCount) {
 
-                customLoadMoreDataFromApi(page);
+                staticPageId = page;
+                customLoadMoreDataFromApi(staticPageId);
 
             }
         });
@@ -206,6 +210,7 @@ public class SearchActivity extends AppCompatActivity implements AdvSearchDialog
     public void onFinishEditDialog(String inputText) {
 
         articles.clear();
+        staticPageId =0;
         String advBgnDate;
         String advSortOrder;
         String advSports;
@@ -213,8 +218,18 @@ public class SearchActivity extends AppCompatActivity implements AdvSearchDialog
         String advArts;
         List<String> filter = Arrays.asList(inputText.split(","));
         advBgnDate = filter.get(0).toString().trim();
-        staticbeginDate = advBgnDate;
 
+        if ( !advBgnDate.isEmpty())
+        {
+            staticbeginDate = advBgnDate;
+            Log.d("advBgnDate","this not null" + staticbeginDate);
+        }
+
+        if (advBgnDate.isEmpty())
+        {
+            staticbeginDate = null;
+            Log.d("advBgnDate","this is null" + staticbeginDate);
+        }
 
         advSortOrder = filter.get(1).toString().trim();
         staticSortOrder = advSortOrder;
@@ -223,20 +238,26 @@ public class SearchActivity extends AppCompatActivity implements AdvSearchDialog
         advSports = filter.get(3).toString().trim();
         advFashion= filter.get(4).toString().trim();
 
-        Log.d("advBgnDate",advBgnDate);
+
+        if (advFashion.contains("true"))
+        {
+            staticAdvFashion = "Fashion & Style";
+        }
+        if (advFashion.contains("false"))
+        {
+            staticAdvFashion = null;
+        }
         Log.d("Sortorder",advSortOrder);
         Log.d("Arts",advArts);
         Log.d("Sports",advSports);
-        Log.d("Fashion",advFashion);
-        articles.clear();
+        Log.d("Fashion", advFashion);
+        //articles.clear();
         onArtcileSearched(staticQuery, staticbeginDate, staticSortOrder, null, null, null);
-
 
     }
 
     public void onArtcileSearched (String query, String beginDate, String sortOrder, String arts, String sports, String fashion)
     {
-      //  articles.clear();
         AsyncHttpClient client = new AsyncHttpClient();
         String url = "http://api.nytimes.com/svc/search/v2/articlesearch.json";
 
@@ -246,18 +267,19 @@ public class SearchActivity extends AppCompatActivity implements AdvSearchDialog
         params.put("q", query);
         params.put("begin_date",beginDate);
         params.put("sort-order",sortOrder);
-        Log.d("Params",params.toString());
 
-        client.get(url,params,new JsonHttpResponseHandler(){
+
+        Log.d("Params", params.toString());
+        staticPageId++;
+
+        client.get(url, params, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                Log.d("DEBUG", response.toString());
                 JSONArray articleJsonResults = null;
 
-                try{
+                try {
                     articleJsonResults = response.getJSONObject("response").getJSONArray("docs");
-                    for (int i=0; i<articleJsonResults.length();i++)
-                    {
+                    for (int i = 0; i < articleJsonResults.length(); i++) {
                         JSONObject a = articleJsonResults.optJSONObject(i);
                         Article article = new Article(a);
                         articles.add(article);
@@ -265,8 +287,7 @@ public class SearchActivity extends AppCompatActivity implements AdvSearchDialog
                     }
 
                     Log.d("DEBUG", articles.toString());
-                }catch (JSONException e)
-                {
+                } catch (JSONException e) {
                     e.printStackTrace();
                 }
 

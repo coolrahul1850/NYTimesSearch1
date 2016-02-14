@@ -29,8 +29,6 @@ public class AdvSearchDialog extends DialogFragment implements View.OnClickListe
     public static boolean flagSports = false;
     public static boolean flagFashion = false;
 
-
-
     Button advBtnSave;
     EditText advBgnDate;
     CheckBox arts;
@@ -38,7 +36,6 @@ public class AdvSearchDialog extends DialogFragment implements View.OnClickListe
     CheckBox sports;
     Spinner advSortOrder;
     String advsortorder;
-
 
     public AdvSearchDialog()
     {
@@ -57,9 +54,6 @@ public class AdvSearchDialog extends DialogFragment implements View.OnClickListe
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        //  mEditText.setOnEditorActionListener(this);
-
-
         return inflater.inflate(R.layout.item_advanced_search_dialog, container);
     }
 
@@ -153,8 +147,6 @@ public class AdvSearchDialog extends DialogFragment implements View.OnClickListe
     }
 
 
-
-    // @Bind (R.id.etQuery) EditText etQuery;
     @Override
     public void onClick(View v) {
 
